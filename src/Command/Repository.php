@@ -4,6 +4,8 @@
 namespace App\Command;
 
 
+use App\Service\Exception\NotFoundRepositoryException;
+use App\Service\Exception\NotFoundVCSException;
 use App\Service\Factory\RepositoryFactory;
 use App\Service\Factory\VCSFactory;
 use Symfony\Component\Console\Command\Command;
@@ -101,23 +103,29 @@ class Repository extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->getData($input);
+        try {
 
-        $repository = $this->repositoryFactory->get(
-            $this->service,
-            [
-                $this->repositoryLink,
-                $this->branch,
-            ]
-        );
+            $repository = $this->repositoryFactory->get(
+                $this->service,
+                [
+                    $this->repositoryLink,
+                    $this->branch,
+                ]
+            );
 
-        $vcs = $this->vcsFactory->get(
-            $this->vcs,
-            [
-                $repository,
-            ]
-        );
+            $vcs = $this->vcsFactory->get(
+                $this->vcs,
+                [
+                    $repository,
+                ]
+            );
 
-        echo $vcs->getLastCommitHash();
+            echo $vcs->getLastCommitHash();
+        } catch (NotFoundRepositoryException | NotFoundVCSException $e) {
+            echo $e->getMessage();
+        } catch (\Exception $e) {
+            echo "Undefined exception";
+        }
     }
 
     protected function getData(InputInterface $input)
