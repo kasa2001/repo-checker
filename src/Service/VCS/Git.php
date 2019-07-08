@@ -8,11 +8,6 @@ use App\Service\Repository\AbstractRepository;
 class Git implements IVcs
 {
     /**
-     * @var AbstractRepository
-     */
-    private $repository;
-
-    /**
      * @var string
      */
     private $process;
@@ -22,7 +17,6 @@ class Git implements IVcs
      */
     public function __construct(AbstractRepository $repository)
     {
-        $this->repository = $repository;
         $this->process = "git ls-remote " . $repository->getRepositoryLink() . ".git " . $repository->getBranchName();
     }
 
